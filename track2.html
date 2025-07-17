@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>紀錄中，請稍候...</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <p>資料記錄中，請稍候...</p>
+
+  <script>
+    // ✅ 換成你自己的 Firebase 設定資訊
+    const firebaseConfig = {
+    apiKey: "AIzaSyCecDzYKiakbQYyvG3E1OGQDAINgSYhEW8",
+    authDomain: "social-test-c3afc.firebaseapp.com",
+    projectId: "social-test-c3afc",
+    storageBucket: "social-test-c3afc.firebasestorage.app",
+    messagingSenderId: "974958380923",
+    appId: "1:974958380923:web:7fb88ad13ee7a353c41fde"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const uid = getQueryParam("uid") || "unknown";
+    const userAgent = navigator.userAgent;
+    const timestamp = new Date().toISOString();
+
+    // ✅ 取得使用者 IP（透過免費 IP API）
+    fetch("https://api.ipify.org?format=json")
+      .then(response => response.json())
+      .then(data => {
+        const ip = data.ip;
+
+        // ✅ 將資料寫入 Firebase
+        db.ref("clicks/" + encodeURIComponent(uid)).push({
+          timestamp: timestamp,
+          ip: ip,
+          userAgent: userAgent
+        });
+
+        // ✅ 自動轉跳 Google 表單
+        setTimeout(() => {
+          window.location.href = "https://forms.gle/cnmTnKE2SQb8gEmEA";
+        }, 1000);
+      })
+      .catch(() => {
+        // 若失敗也照樣跳轉
+        setTimeout(() => {
+          window.location.href = "https://forms.gle/cnmTnKE2SQb8gEmEA";
+        }, 1000);
+      });
+  </script>
+</body>
+</html>
