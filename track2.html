@@ -41,7 +41,7 @@
       firebase.database().ref('clicks').push(data)
         .then(() => {
           // ✅ 寫入成功 → 導向 Google 表單或其他網址
-          window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSdUyYtC...你的表單ID.../viewform";
+          window.location.href = "https://forms.gle/2GSgrA6jGUQ2ewZw5";
         })
         .catch((error) => {
           console.error("寫入失敗：", error);
