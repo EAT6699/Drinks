@@ -10,46 +10,50 @@
   <h2>載入中...</h2>
 
   <script>
-    // ✅ 你的 Firebase 設定
+    // Firebase 初始化設定
     const firebaseConfig = {
-    apiKey: "AIzaSyCIQT_-tkgmNVYx58UiPDUTH9eDtIEZoxs",
-    authDomain: "drinkstrack.firebaseapp.com",
-    databaseURL: "https://drinkstrack-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "drinkstrack",
-    storageBucket: "drinkstrack.firebasestorage.app",
-    messagingSenderId: "712892167846",
-    appId: "1:712892167846:web:dc3a326915963d2dec6667"
+      apiKey: "AIzaSyCIQT_-tkgmNVYx58UiPDUTH9eDtIEZoxs",
+      authDomain: "drinkstrack.firebaseapp.com",
+      databaseURL: "https://drinkstrack-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "drinkstrack",
+      storageBucket: "drinkstrack.firebasestorage.app",
+      messagingSenderId: "712892167846",
+      appId: "1:712892167846:web:dc3a326915963d2dec6667"
     };
 
-    // ✅ 初始化 Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // ✅ 寫入點擊紀錄到 `/clicks`
-    const logClick = () => {
+    // 取得網址參數 uid
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function logClick() {
       const now = new Date();
       const timestamp = now.toISOString();
       const userAgent = navigator.userAgent;
+      const uid = getQueryParam('uid') || "unknown";
 
       const data = {
         timestamp,
         userAgent,
-        redirected: true
+        redirected: true,
+        uid
       };
 
-      // ✅ 推入 clicks 節點
-      firebase.database().ref('clicks').push(data)
+      database.ref('clicks').push(data)
         .then(() => {
-          // ✅ 寫入成功 → 導向 Google 表單或其他網址
+          // 寫入成功導向
           window.location.href = "https://forms.gle/2GSgrA6jGUQ2ewZw5";
         })
         .catch((error) => {
           console.error("寫入失敗：", error);
           document.body.innerHTML = "<h2>寫入 Firebase 失敗</h2>";
         });
-    };
+    }
 
-    // ✅ 自動觸發（載入後即執行）
     window.onload = logClick;
   </script>
 </body>
