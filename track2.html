@@ -2,42 +2,55 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>正在導向...</title>
-  <script type="module">
-    // ✅ 匯入 Firebase 套件
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  <title>點擊追蹤</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h2>載入中...</h2>
 
-    // ✅ Firebase 設定（你提供的）
+  <script>
+    // ✅ 你的 Firebase 設定
     const firebaseConfig = {
       apiKey: "AIzaSyCecDzYKiakbQYyvG3E1OGQDAINgSYhEW8",
       authDomain: "social-test-c3afc.firebaseapp.com",
+      databaseURL: "https://social-test-c3afc-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "social-test-c3afc",
       storageBucket: "social-test-c3afc.appspot.com",
       messagingSenderId: "974958380923",
-      appId: "1:974958380923:web:7fb88ad13ee7a353c41fde",
-      databaseURL: "https://social-test-c3afc-default-rtdb.asia-southeast1.firebasedatabase.app"
+      appId: "1:974958380923:web:7fb88ad13ee7a353c41fde"
     };
 
     // ✅ 初始化 Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-    // ✅ 寫入點擊紀錄（push，每次新增一筆）
-    push(ref(db, "clicks"), {
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      redirected: true
-    });
+    // ✅ 寫入點擊紀錄到 `/clicks`
+    const logClick = () => {
+      const now = new Date();
+      const timestamp = now.toISOString();
+      const userAgent = navigator.userAgent;
 
-    // ✅ 自動跳轉（延遲 2 秒）
-    setTimeout(() => {
-      window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLScKAbc123456789abcdefg/viewform";
-    }, 2000); // 2000ms = 2 秒
+      const data = {
+        timestamp,
+        userAgent,
+        redirected: true
+      };
+
+      // ✅ 推入 clicks 節點
+      firebase.database().ref('clicks').push(data)
+        .then(() => {
+          // ✅ 寫入成功 → 導向 Google 表單或其他網址
+          window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSdUyYtC...你的表單ID.../viewform";
+        })
+        .catch((error) => {
+          console.error("寫入失敗：", error);
+          document.body.innerHTML = "<h2>寫入 Firebase 失敗</h2>";
+        });
+    };
+
+    // ✅ 自動觸發（載入後即執行）
+    window.onload = logClick;
   </script>
-</head>
-<body>
-  <h2>請稍候，正在導向 Google 表單...</h2>
 </body>
 </html>
